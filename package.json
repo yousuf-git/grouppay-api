@@ -5,8 +5,11 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "start": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
+    "start": "node --experimental-json-modules src/index.js",
     "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
+  },
+  "engines": {
+    "node": "22.x"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
