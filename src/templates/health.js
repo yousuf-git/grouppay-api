@@ -3,7 +3,7 @@ export const getHealthHTML = (metrics) => {
   const isConnected = metrics.dbStatus === 'Connected';
   const statusColor = isConnected ? '#10b981' : '#f43f5e';
   const statusGlow = isConnected ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)';
-  const statusText = isConnected ? 'All Systems Operational' : 'Systems Degraded';
+  const statusText = isConnected ? 'All Endpoints Operational' : 'Endpoints Degraded';
 
   return `
 <!DOCTYPE html>
@@ -290,7 +290,7 @@ export const getHealthHTML = (metrics) => {
         <div class="metrics-section">
             <div class="metric-box">
                 <div class="metric-label">System Uptime</div>
-                <div class="metric-value">${metrics.uptime}</div>
+                <div id="uptime-counter" class="metric-value">Calculated...</div>
             </div>
             <div class="metric-box">
                 <div class="metric-label">Memory Usage</div>
@@ -318,6 +318,25 @@ export const getHealthHTML = (metrics) => {
             Developed by <a href="https://yousuf-dev.com" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">M. Yousuf</a>
         </div>
     </div>
+
+    <script>
+        (function() {
+            const startTime = ${metrics.serverStartTime};
+            const uptimeElement = document.getElementById('uptime-counter');
+            if (!uptimeElement) return;
+
+            function updateUptime() {
+                const diffInSeconds = Math.floor((Date.now() - startTime) / 1000);
+                const hours = Math.floor(diffInSeconds / 3600);
+                const minutes = Math.floor((diffInSeconds % 3600) / 60);
+                const seconds = diffInSeconds % 60;
+                uptimeElement.innerText = hours + 'h ' + minutes + 'm ' + seconds + 's';
+            }
+
+            setInterval(updateUptime, 1000);
+            updateUptime();
+        })();
+    </script>
 </body>
 </html>
 `;

@@ -16,7 +16,7 @@ export default function (app) {
   app.get('/', async (req, res) => {
     // Gather metrics
     const uptimeSeconds = process.uptime();
-    const uptime = `${Math.floor(uptimeSeconds / 3600)}h ${Math.floor((uptimeSeconds % 3600) / 60)}m ${Math.floor(uptimeSeconds % 60)}s`;
+    const serverStartTime = Date.now() - (uptimeSeconds * 1000);
     
     const memoryData = process.memoryUsage();
     const memory = `${Math.round(memoryData.heapUsed / 1024 / 1024)}MB / ${Math.round(memoryData.heapTotal / 1024 / 1024)}MB`;
@@ -30,7 +30,7 @@ export default function (app) {
     }
 
     const metrics = {
-        uptime,
+        serverStartTime,
         memory,
         dbStatus,
         nodeVersion: process.version,
