@@ -209,17 +209,22 @@ export const getHealthHTML = (metrics) => {
         }
 
         .footer {
-            margin-top: 3rem;
+            margin-top: 2rem;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .last-update {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            margin-bottom: 12px;
+            margin-bottom: 0;
         }
 
         .dot {
@@ -232,6 +237,11 @@ export const getHealthHTML = (metrics) => {
         @media (max-width: 640px) {
             .metrics-section {
                 grid-template-columns: 1fr;
+            }
+            
+            .footer {
+                gap: 8px;
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -302,7 +312,10 @@ export const getHealthHTML = (metrics) => {
                 <span class="dot"></span>
                 API v1.0.0
             </div>
-            <div>&copy; ${new Date().getFullYear()} GroupPay • All systems monitored</div>
+            <span class="dot"></span>
+            &copy; ${new Date().getFullYear()} GroupPay
+            <span class="dot"></span>
+            Developed by <a href="https://yousuf-dev.com" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">M. Yousuf</a>
         </div>
     </div>
 </body>

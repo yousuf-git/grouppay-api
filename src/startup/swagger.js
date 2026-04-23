@@ -7,7 +7,11 @@ const options = {
     info: {
       title: 'GroupPay API',
       version: '1.0.0',
-      description: 'API documentation for GroupPay App',
+      description: 'API documentation for GroupPay App. <br><br><b>Developed by <a href="https://yousuf-dev.com" target="_blank">M. Yousuf</a></b>',
+      contact: {
+        name: 'M. Yousuf',
+        url: 'https://yousuf-dev.com',
+      },
     },
     servers: [
       {
