@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "8d3f1e9a-7c9b-4e5d-b2a1-3f4a5b6c7d8e",
 		"name": "GroupPay API",
-		"description": "Comprehensive Postman collection for GroupPay standalone Node.js API",
+		"description": "Complete Postman collection for GroupPay mobile + web API. Base URL: {{baseUrl}}. All protected routes require Bearer token (auto-saved by Login).",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -16,24 +16,13 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"fullname\": \"John Doe\",\n    \"phone\": \"+1234567890\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"fullname\": \"John Doe\",\n    \"phone\": \"+923001234567\"\n}",
+							"options": { "raw": { "language": "json" } }
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/up/auth/signup",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"auth",
-								"signup"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "auth", "signup"]
 						}
 					},
 					"response": []
@@ -48,6 +37,7 @@
 									"var jsonData = pm.response.json();",
 									"if (jsonData.data && jsonData.data.token) {",
 									"    pm.environment.set(\"token\", jsonData.data.token);",
+									"    pm.collectionVariables.set(\"token\", jsonData.data.token);",
 									"}"
 								],
 								"type": "text/javascript"
@@ -60,23 +50,12 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"options": { "raw": { "language": "json" } }
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/up/auth/login",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"auth",
-								"login"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "auth", "login"]
 						}
 					},
 					"response": []
@@ -89,23 +68,119 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"email\": \"user@example.com\",\n    \"otp\": \"123456\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"options": { "raw": { "language": "json" } }
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/up/auth/verify-email",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"auth",
-								"verify-email"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "auth", "verify-email"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resend OTP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/auth/resend-otp",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "auth", "resend-otp"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password (link)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/auth/forgot-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "auth", "forgot-password"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password OTP (mobile)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/auth/forgot-password-otp",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "auth", "forgot-password-otp"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password (token)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"<jwt-reset-token>\",\n    \"newPassword\": \"newpassword123\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/auth/reset-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "auth", "reset-password"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password OTP (mobile)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\",\n    \"otp\": \"123456\",\n    \"newPassword\": \"newpassword123\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/auth/reset-password-otp",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "auth", "reset-password-otp"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/auth/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "auth", "profile"]
 						}
 					},
 					"response": []
@@ -115,36 +190,99 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
 						},
 						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"fullname\": \"John Updated\",\n    \"username\": \"john_doe_new\",\n    \"profile_picture_url\": \"https://example.com/pic.jpg\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"fullname\": \"John Updated\",\n    \"phone\": \"+923001234567\",\n    \"username\": \"john_updated\",\n    \"profile_picture_url\": \"https://example.com/pic.jpg\"\n}",
+							"options": { "raw": { "language": "json" } }
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/up/auth/profile",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"auth",
-								"profile"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "auth", "profile"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"currentPassword\": \"password123\",\n    \"newPassword\": \"newpassword456\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/auth/change-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "auth", "change-password"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Search Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/users/search?q=john",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "users", "search"],
+							"query": [{ "key": "q", "value": "john" }]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by Email",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/users/by-email?email=user@example.com",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "users", "by-email"],
+							"query": [{ "key": "email", "value": "user@example.com" }]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/users/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "users", "1"]
 						}
 					},
 					"response": []
@@ -159,35 +297,17 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
 						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/up/groups?page=1&pageSize=10",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"groups"
-							],
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "groups"],
 							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "pageSize",
-									"value": "10"
-								}
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "10" }
 							]
 						}
 					},
@@ -198,35 +318,19 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
 						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"name\": \"Weekend Trip\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"options": { "raw": { "language": "json" } }
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/up/groups",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"groups"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "groups"]
 						}
 					},
 					"response": []
@@ -236,27 +340,53 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
 						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/up/groups/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"groups",
-								"1"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "groups", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Group",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Weekend Trip Updated\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/groups/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "groups", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Group (Deactivate)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/groups/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "groups", "1"]
 						}
 					},
 					"response": []
@@ -266,37 +396,109 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
 						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"starred\": true\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"options": { "raw": { "language": "json" } }
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/up/groups/1/star",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"groups",
-								"1",
-								"star"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "groups", "1", "star"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Leave Group",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/groups/1/leave",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "groups", "1", "leave"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Group Members",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/groups/1/members",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "groups", "1", "members"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Member Role",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"role\": \"ADMIN\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/groups/1/members/2/role",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "groups", "1", "members", "2", "role"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Member",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/groups/1/members/2",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "groups", "1", "members", "2"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Balance in Group",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/groups/1/my-balance",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "groups", "1", "my-balance"]
 						}
 					},
 					"response": []
@@ -307,157 +509,126 @@
 			"name": "Scenes",
 			"item": [
 				{
-					"name": "Create Scene (Ledger Logic)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"group_id\": 1,\n    \"location\": \"Gloria Jeans\",\n    \"description\": \"Coffee with team\",\n    \"scene_timestamptz\": \"2023-10-27T10:00:00Z\",\n    \"total_amount\": 1000,\n    \"participants\": [\n        {\n            \"person_id\": 1,\n            \"paid_amount\": 1000,\n            \"additional_amount\": 100,\n            \"participant_category\": \"SHARING\"\n        },\n        {\n            \"person_id\": 2,\n            \"paid_amount\": 0,\n            \"additional_amount\": 0,\n            \"participant_category\": \"SHARING\"\n        }\n    ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/up/scenes",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"scenes"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Get Scenes",
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
 						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/up/scenes?groupId=1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"scenes"
-							],
+							"raw": "{{baseUrl}}/api/up/scenes?groupId=1&page=1&pageSize=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "scenes"],
 							"query": [
-								{
-									"key": "groupId",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Deposits",
-			"item": [
-				{
-					"name": "Create Deposit Request",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"group_id\": 1,\n    \"receiver_id\": 2,\n    \"amount\": 500,\n    \"deposit_type\": \"CASH\",\n    \"description\": \"Returning coffee money\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/up/deposits",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"deposits"
+								{ "key": "groupId", "value": "1" },
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "10" },
+								{ "key": "startDate", "value": "2025-01-01", "disabled": true },
+								{ "key": "endDate", "value": "2025-12-31", "disabled": true },
+								{ "key": "location", "value": "Gloria Jeans", "disabled": true }
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Approve Deposit",
+					"name": "Get Scene by ID",
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
 						},
-						"method": "PATCH",
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/scenes/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "scenes", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Scene",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"status\": \"APPROVED\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"group_id\": 1,\n    \"location\": \"Gloria Jeans\",\n    \"description\": \"Coffee with team\",\n    \"scene_timestamptz\": \"2025-05-25T10:00:00Z\",\n    \"total_amount\": 1500,\n    \"participants\": [\n        {\n            \"person_id\": 1,\n            \"paid_amount\": 1500,\n            \"additional_amount\": 200,\n            \"participant_category\": \"SHARING\"\n        },\n        {\n            \"person_id\": 2,\n            \"paid_amount\": 0,\n            \"additional_amount\": 0,\n            \"participant_category\": \"SHARING\"\n        },\n        {\n            \"person_id\": 3,\n            \"paid_amount\": 0,\n            \"additional_amount\": 500,\n            \"participant_category\": \"INDIVIDUAL\"\n        }\n    ]\n}",
+							"options": { "raw": { "language": "json" } }
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/up/deposits/1/status",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"deposits",
-								"1",
-								"status"
-							]
+							"raw": "{{baseUrl}}/api/up/scenes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "scenes"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Scene",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"location\": \"Gloria Jeans (Updated)\",\n    \"description\": \"Updated description\",\n    \"total_amount\": 1600,\n    \"scene_timestamptz\": \"2025-05-25T11:00:00Z\",\n    \"participants\": [\n        {\n            \"person_id\": 1,\n            \"paid_amount\": 1600,\n            \"additional_amount\": 0,\n            \"participant_category\": \"SHARING\"\n        },\n        {\n            \"person_id\": 2,\n            \"paid_amount\": 0,\n            \"additional_amount\": 0,\n            \"participant_category\": \"SHARING\"\n        }\n    ]\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/scenes/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "scenes", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Scene",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/scenes/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "scenes", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Calculate Scene (Preview)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"total_amount\": 3000,\n    \"participants\": [\n        {\n            \"person_id\": 1,\n            \"paid_amount\": 2000,\n            \"additional_amount\": 0,\n            \"participant_category\": \"SHARING\"\n        },\n        {\n            \"person_id\": 2,\n            \"paid_amount\": 500,\n            \"additional_amount\": 200,\n            \"participant_category\": \"SHARING\"\n        },\n        {\n            \"person_id\": 3,\n            \"paid_amount\": 500,\n            \"additional_amount\": 800,\n            \"participant_category\": \"INDIVIDUAL\"\n        }\n    ]\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/scenes/calculate",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "scenes", "calculate"]
 						}
 					},
 					"response": []
@@ -468,39 +639,65 @@
 			"name": "Invites",
 			"item": [
 				{
+					"name": "Get Received Invites",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/invites/received?page=1&pageSize=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "invites", "received"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "10" }
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sent Invites",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/invites/sent?page=1&pageSize=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "invites", "sent"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "10" }
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Send Invite",
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
 						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"group_id\": 1,\n    \"receiver_id\": 2\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"options": { "raw": { "language": "json" } }
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/up/invites",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"invites"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "invites"]
 						}
 					},
 					"response": []
@@ -510,37 +707,251 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
 						},
 						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"status\": \"ACCEPTED\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"options": { "raw": { "language": "json" } }
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/up/invites/1/status",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"invites",
-								"1",
-								"status"
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "invites", "1", "status"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Decline Invite",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"DECLINED\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/invites/1/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "invites", "1", "status"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Invite (sender)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/invites/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "invites", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Deposits",
+			"item": [
+				{
+					"name": "Get Deposits",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/deposits?page=1&pageSize=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "deposits"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "10" },
+								{ "key": "groupId", "value": "1", "disabled": true },
+								{ "key": "status", "value": "PENDING", "disabled": true }
 							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Deposit by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/deposits/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "deposits", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Deposit Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"group_id\": 1,\n    \"receiver_id\": 2,\n    \"amount\": 500,\n    \"deposit_type\": \"CASH\",\n    \"description\": \"Returning coffee money\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/deposits",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "deposits"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Deposit (pending, sender only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 600,\n    \"deposit_type\": \"BANK_TRANSFER\",\n    \"description\": \"Updated — added bank transfer\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/deposits/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "deposits", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Deposit",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"APPROVED\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/deposits/1/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "deposits", "1", "status"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Deposit",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"REJECTED\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/deposits/1/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "deposits", "1", "status"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "Get Notifications",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/notifications?page=1&pageSize=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "notifications"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "20" }
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark All as Read",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/notifications/read-all",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "notifications", "read-all"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark as Read",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/notifications/1/read",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "notifications", "1", "read"]
 						}
 					},
 					"response": []
@@ -551,35 +962,25 @@
 			"name": "Transactions",
 			"item": [
 				{
-					"name": "Get Ledger",
+					"name": "Get Transactions (Ledger)",
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
 						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/up/transactions?groupId=1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"transactions"
-							],
+							"raw": "{{baseUrl}}/api/up/transactions?groupId=1&page=1&pageSize=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "transactions"],
 							"query": [
-								{
-									"key": "groupId",
-									"value": "1"
-								}
+								{ "key": "groupId", "value": "1" },
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "20" },
+								{ "key": "personId", "value": "2", "disabled": true },
+								{ "key": "startDate", "value": "2025-01-01", "disabled": true },
+								{ "key": "endDate", "value": "2025-12-31", "disabled": true }
 							]
 						}
 					},
@@ -590,28 +991,516 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
 						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/api/up/transactions/summary/1",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"transactions",
-								"summary",
-								"1"
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "transactions", "summary", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Appeals",
+			"item": [
+				{
+					"name": "Get My Appeals",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/appeals?page=1&pageSize=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "appeals"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "10" },
+								{ "key": "groupId", "value": "1", "disabled": true },
+								{ "key": "status", "value": "OPEN", "disabled": true }
 							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Appeal by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/appeals/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "appeals", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Appeal",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"group_id\": 1,\n    \"message\": \"I think my balance was calculated incorrectly for the last scene.\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/appeals",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "appeals"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Appeal (admin: status/comment)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"UNDER_REVIEW\",\n    \"comment\": \"Reviewing the scene calculation now.\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/appeals/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "appeals", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Appeal (owner: edit message)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"message\": \"Updated: the issue was with the Rs 200 additional charge on scene #5.\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/appeals/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "appeals", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Appeal",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/appeals/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "appeals", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Expenses",
+			"item": [
+				{
+					"name": "Get Expenses",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/expenses?page=1&pageSize=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "expenses"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "10" },
+								{ "key": "type", "value": "DEBIT", "disabled": true },
+								{ "key": "startDate", "value": "2025-01-01", "disabled": true },
+								{ "key": "endDate", "value": "2025-12-31", "disabled": true }
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expense Stats",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/expenses/stats",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "expenses", "stats"],
+							"query": [
+								{ "key": "startDate", "value": "2025-01-01", "disabled": true },
+								{ "key": "endDate", "value": "2025-12-31", "disabled": true }
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expense by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/expenses/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "expenses", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Expense",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 350,\n    \"type\": \"DEBIT\",\n    \"location\": \"McDonald's\",\n    \"note\": \"Lunch\",\n    \"date_time\": \"2025-05-25T13:00:00Z\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/expenses",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "expenses"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Expense",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 400,\n    \"note\": \"Lunch + dessert\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/expenses/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "expenses", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Expense",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/expenses/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "expenses", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Balances",
+			"item": [
+				{
+					"name": "Get Balances",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/balances?page=1&pageSize=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "balances"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "10" },
+								{ "key": "type", "value": "CREDIT", "disabled": true },
+								{ "key": "startDate", "value": "2025-01-01", "disabled": true },
+								{ "key": "endDate", "value": "2025-12-31", "disabled": true }
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balance Stats",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/balances/stats",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "balances", "stats"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balance by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/balances/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "balances", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Balance Entry",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 5000,\n    \"type\": \"CREDIT\",\n    \"description\": \"Cash received from salary\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/balances",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "balances"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Balance Entry",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 5500,\n    \"description\": \"Cash received from salary (corrected)\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/balances/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "balances", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Balance Entry",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/balances/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "balances", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Accounts",
+			"item": [
+				{
+					"name": "Get My Accounts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/accounts",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "accounts"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/accounts/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "accounts", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bank_name\": \"Meezan Bank\",\n    \"title\": \"Personal Savings\",\n    \"acc_number\": \"01234567890123\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/accounts",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "accounts"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Business Account\",\n    \"acc_number\": \"98765432109876\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/up/accounts/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "accounts", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/accounts/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "accounts", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dashboard",
+			"item": [
+				{
+					"name": "Get Dashboard Summary",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/up/dashboard",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "dashboard"]
 						}
 					},
 					"response": []
@@ -626,13 +1515,7 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
 						},
 						"method": "POST",
 						"header": [],
@@ -643,25 +1526,13 @@
 									"key": "file",
 									"type": "file",
 									"src": []
-								},
-								{
-									"key": "folder",
-									"value": "scenes",
-									"type": "text"
 								}
 							]
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/up/files/upload",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"up",
-								"files",
-								"upload"
-							]
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "up", "files", "upload"]
 						}
 					},
 					"response": []
@@ -672,21 +1543,11 @@
 	"event": [
 		{
 			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
+			"script": { "type": "text/javascript", "exec": [""] }
 		},
 		{
 			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
+			"script": { "type": "text/javascript", "exec": [""] }
 		}
 	],
 	"variable": [
