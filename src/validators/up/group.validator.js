@@ -12,3 +12,7 @@ export const updateGroupSchema = Joi.object({
 export const toggleStarSchema = Joi.object({
   starred: Joi.boolean().required()
 });
+
+export const updateMemberRoleSchema = Joi.object({
+  role: Joi.string().valid('ADMIN', 'MEMBER').required()
+});

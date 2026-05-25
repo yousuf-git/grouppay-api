@@ -328,3 +328,283 @@ export const leaveGroup = asyncHandler(async (req, res) => {
 
   return successResponse(res, 'Left group successfully');
 });
+
+/**
+ * @swagger
+ * /api/up/groups/{id}:
+ *   delete:
+ *     summary: Soft-delete (deactivate) group
+ *     tags: [Groups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Group deactivated
+ */
+export const deleteGroup = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const { data: participant } = await supabase
+    .from('group_participants')
+    .select('role')
+    .eq('group_id', id)
+    .eq('person_id', req.user.person_id)
+    .single();
+
+  if (!participant || participant.role !== 'ADMIN') {
+    return errorResponse(res, StatusCodes.FORBIDDEN, 'Only admins can delete the group');
+  }
+
+  const { error } = await supabase
+    .from('groups')
+    .update({ is_active: false, status: 'INACTIVE' })
+    .eq('group_id', id);
+
+  if (error) throw error;
+
+  return successResponse(res, 'Group deactivated successfully');
+});
+
+/**
+ * @swagger
+ * /api/up/groups/{id}/members:
+ *   get:
+ *     summary: Get group members
+ *     tags: [Groups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: List of active members with roles
+ */
+export const getGroupMembers = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const { data: self } = await supabase
+    .from('group_participants')
+    .select('participant_id')
+    .eq('group_id', id)
+    .eq('person_id', req.user.person_id)
+    .eq('status', 'ACTIVE')
+    .single();
+
+  if (!self) return errorResponse(res, StatusCodes.FORBIDDEN, 'Access denied');
+
+  const { data, error } = await supabase
+    .from('group_participants')
+    .select(`
+      participant_id,
+      person_id,
+      role,
+      status,
+      joined_at,
+      person:person_id(person_id, fullname, email, username, profile_picture_url)
+    `)
+    .eq('group_id', id)
+    .eq('status', 'ACTIVE')
+    .order('joined_at', { ascending: true });
+
+  if (error) throw error;
+
+  return successResponse(res, 'Members fetched successfully', data);
+});
+
+/**
+ * @swagger
+ * /api/up/groups/{id}/members/{personId}/role:
+ *   patch:
+ *     summary: Change member role (ADMIN only)
+ *     tags: [Groups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: path
+ *         name: personId
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [role]
+ *             properties:
+ *               role: { type: string, enum: [ADMIN, MEMBER] }
+ *     responses:
+ *       200:
+ *         description: Role updated
+ */
+export const updateMemberRole = asyncHandler(async (req, res) => {
+  const { id, personId } = req.params;
+  const { role } = req.body;
+
+  const { data: requester } = await supabase
+    .from('group_participants')
+    .select('role')
+    .eq('group_id', id)
+    .eq('person_id', req.user.person_id)
+    .single();
+
+  if (!requester || requester.role !== 'ADMIN') {
+    return errorResponse(res, StatusCodes.FORBIDDEN, 'Only admins can change member roles');
+  }
+
+  if (Number(personId) === req.user.person_id) {
+    return errorResponse(res, StatusCodes.BAD_REQUEST, 'Cannot change your own role');
+  }
+
+  const { data, error } = await supabase
+    .from('group_participants')
+    .update({ role })
+    .eq('group_id', id)
+    .eq('person_id', personId)
+    .select()
+    .single();
+
+  if (error || !data) return errorResponse(res, StatusCodes.NOT_FOUND, 'Member not found in this group');
+
+  return successResponse(res, 'Member role updated successfully', data);
+});
+
+/**
+ * @swagger
+ * /api/up/groups/{id}/members/{personId}:
+ *   delete:
+ *     summary: Remove member from group (ADMIN only)
+ *     tags: [Groups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: path
+ *         name: personId
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Member removed
+ */
+export const removeMember = asyncHandler(async (req, res) => {
+  const { id, personId } = req.params;
+
+  const { data: requester } = await supabase
+    .from('group_participants')
+    .select('role')
+    .eq('group_id', id)
+    .eq('person_id', req.user.person_id)
+    .single();
+
+  if (!requester || requester.role !== 'ADMIN') {
+    return errorResponse(res, StatusCodes.FORBIDDEN, 'Only admins can remove members');
+  }
+
+  if (Number(personId) === req.user.person_id) {
+    return errorResponse(res, StatusCodes.BAD_REQUEST, 'Use /leave to remove yourself');
+  }
+
+  const { data: transactions } = await supabase
+    .from('transaction')
+    .select('type, amount')
+    .eq('group_id', id)
+    .eq('person_id', personId);
+
+  let balance = 0;
+  transactions?.forEach(t => {
+    if (t.type === 'CREDIT') balance += t.amount;
+    else balance -= t.amount;
+  });
+
+  if (Math.abs(balance) > 0.01) {
+    return errorResponse(res, StatusCodes.BAD_REQUEST, `Cannot remove member with non-zero balance (PKR ${balance.toFixed(2)})`);
+  }
+
+  const { error } = await supabase
+    .from('group_participants')
+    .delete()
+    .eq('group_id', id)
+    .eq('person_id', personId);
+
+  if (error) throw error;
+
+  const { data: group } = await supabase.from('groups').select('name').eq('group_id', id).single();
+  await supabase.from('notifications').insert({
+    receiver_id: Number(personId),
+    sender_id: req.user.person_id,
+    type: 'GROUP_UPDATE',
+    message: `You have been removed from the group "${group?.name}"`,
+    related_id: Number(id),
+    is_read: false
+  });
+
+  return successResponse(res, 'Member removed successfully');
+});
+
+/**
+ * @swagger
+ * /api/up/groups/{id}/my-balance:
+ *   get:
+ *     summary: Get current user's net balance in a group
+ *     tags: [Groups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Net balance (positive = owed to you, negative = you owe)
+ */
+export const getMyGroupBalance = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const { data: participant } = await supabase
+    .from('group_participants')
+    .select('participant_id')
+    .eq('group_id', id)
+    .eq('person_id', req.user.person_id)
+    .single();
+
+  if (!participant) return errorResponse(res, StatusCodes.FORBIDDEN, 'Not a member of this group');
+
+  const { data: transactions, error } = await supabase
+    .from('transaction')
+    .select('type, amount')
+    .eq('group_id', id)
+    .eq('person_id', req.user.person_id);
+
+  if (error) throw error;
+
+  let credit = 0;
+  let debit = 0;
+  transactions?.forEach(t => {
+    if (t.type === 'CREDIT') credit += t.amount;
+    else debit += t.amount;
+  });
+
+  return successResponse(res, 'Balance fetched', {
+    group_id: Number(id),
+    credit,
+    debit,
+    net_balance: credit - debit
+  });
+});
