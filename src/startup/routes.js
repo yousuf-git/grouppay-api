@@ -10,6 +10,11 @@ import notificationRoutes from '../routes/up/notification.routes.js';
 import transactionRoutes from '../routes/up/transaction.routes.js';
 import appealRoutes from '../routes/up/appeal.routes.js';
 import fileRoutes from '../routes/up/file.routes.js';
+import userRoutes from '../routes/up/user.routes.js';
+import expenseRoutes from '../routes/up/expense.routes.js';
+import balanceRoutes from '../routes/up/balance.routes.js';
+import accountRoutes from '../routes/up/account.routes.js';
+import dashboardRoutes from '../routes/up/dashboard.routes.js';
 
 export default function (app) {
   // Health check with realtime metrics
@@ -51,4 +56,9 @@ export default function (app) {
   app.use('/api/up/transactions', transactionRoutes);
   app.use('/api/up/appeals', appealRoutes);
   app.use('/api/up/files', fileRoutes);
+  app.use('/api/up/users', userRoutes);
+  app.use('/api/up/expenses', expenseRoutes);
+  app.use('/api/up/balances', balanceRoutes);
+  app.use('/api/up/accounts', accountRoutes);
+  app.use('/api/up/dashboard', dashboardRoutes);
 }
