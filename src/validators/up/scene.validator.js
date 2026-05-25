@@ -3,7 +3,7 @@ import Joi from 'joi';
 const participantSchema = Joi.object({
   person_id: Joi.number().required(),
   paid_amount: Joi.number().min(0).required(),
-  additional_amount: Joi.number().min(0).required(),
+  additional_amount: Joi.number().required(),
   participant_category: Joi.string().valid('SHARING', 'INDIVIDUAL').default('SHARING')
 });
 
