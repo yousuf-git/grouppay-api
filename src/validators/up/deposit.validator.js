@@ -12,3 +12,10 @@ export const createDepositSchema = Joi.object({
 export const updateDepositStatusSchema = Joi.object({
   status: Joi.string().valid('APPROVED', 'REJECTED').required()
 });
+
+export const updateDepositSchema = Joi.object({
+  amount: Joi.number().positive(),
+  deposit_type: Joi.string().valid('CASH', 'BANK_TRANSFER', 'OTHER'),
+  description: Joi.string().allow('', null),
+  attachment_url: Joi.string().uri().allow('', null)
+}).min(1);

@@ -9,7 +9,9 @@ const router = express.Router();
 router.use(protect); // All invite routes protected
 
 router.get('/received', inviteController.getReceivedInvites);
+router.get('/sent', inviteController.getSentInvites);
 router.post('/', validate(inviteValidator.sendInviteSchema), inviteController.sendInvite);
 router.patch('/:id/status', validate(inviteValidator.updateInviteStatusSchema), inviteController.updateInviteStatus);
+router.delete('/:id', inviteController.cancelInvite);
 
 export default router;

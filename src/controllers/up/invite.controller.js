@@ -146,6 +146,86 @@ export const sendInvite = asyncHandler(async (req, res) => {
  *       200:
  *         description: Status updated
  */
+/**
+ * @swagger
+ * /api/up/invites/sent:
+ *   get:
+ *     summary: Get sent invites
+ *     tags: [Invites]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: pageSize
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: List of sent invites
+ */
+export const getSentInvites = asyncHandler(async (req, res) => {
+  const { page, pageSize } = req.query;
+  const { from, to, limit, page: pageNum } = getPaginationRange(page, pageSize);
+
+  const { data: invites, error, count } = await supabase
+    .from('group_invites')
+    .select(`
+      *,
+      receiver:receiver_id(person_id, fullname, email, profile_picture_url),
+      groups:group_id(group_id, name)
+    `, { count: 'exact' })
+    .eq('sender_id', req.user.person_id)
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (error) throw error;
+
+  return successResponse(res, 'Sent invites fetched', invites, getPaginationMeta(count, pageNum, limit));
+});
+
+/**
+ * @swagger
+ * /api/up/invites/{id}:
+ *   delete:
+ *     summary: Cancel/delete a sent invite (PENDING only)
+ *     tags: [Invites]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Invite cancelled
+ */
+export const cancelInvite = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const { data: invite, error: fetchError } = await supabase
+    .from('group_invites')
+    .select('*')
+    .eq('invite_id', id)
+    .single();
+
+  if (fetchError || !invite) return errorResponse(res, StatusCodes.NOT_FOUND, 'Invite not found');
+
+  if (invite.sender_id !== req.user.person_id) {
+    return errorResponse(res, StatusCodes.FORBIDDEN, 'Only the sender can cancel an invite');
+  }
+
+  if (invite.status !== 'PENDING') {
+    return errorResponse(res, StatusCodes.BAD_REQUEST, 'Only PENDING invites can be cancelled');
+  }
+
+  await supabase.from('group_invites').delete().eq('invite_id', id);
+
+  return successResponse(res, 'Invite cancelled successfully');
+});
+
 export const updateInviteStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;

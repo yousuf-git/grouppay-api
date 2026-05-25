@@ -9,7 +9,9 @@ const router = express.Router();
 router.use(protect); // All deposit routes protected
 
 router.get('/', depositController.getDeposits);
+router.get('/:id', depositController.getDepositById);
 router.post('/', validate(depositValidator.createDepositSchema), depositController.createDeposit);
 router.patch('/:id/status', validate(depositValidator.updateDepositStatusSchema), depositController.updateDepositStatus);
+router.patch('/:id', validate(depositValidator.updateDepositSchema), depositController.updateDeposit);
 
 export default router;
