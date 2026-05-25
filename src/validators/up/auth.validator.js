@@ -32,3 +32,14 @@ export const updateProfileSchema = Joi.object({
   username: Joi.string(),
   profile_picture_url: Joi.string().uri().allow('', null)
 });
+
+export const changePasswordSchema = Joi.object({
+  currentPassword: Joi.string().required(),
+  newPassword: Joi.string().min(6).required()
+});
+
+export const resetPasswordOtpSchema = Joi.object({
+  email: Joi.string().email().required(),
+  otp: Joi.string().length(6).required(),
+  newPassword: Joi.string().min(6).required()
+});

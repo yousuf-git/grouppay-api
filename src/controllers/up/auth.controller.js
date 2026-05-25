@@ -303,3 +303,217 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
   return successResponse(res, 'Profile updated successfully', user);
 });
+
+/**
+ * @swagger
+ * /api/up/auth/profile:
+ *   get:
+ *     summary: Get current user profile
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Profile data
+ */
+export const getProfile = asyncHandler(async (req, res) => {
+  const { data: user, error } = await supabase
+    .from('person')
+    .select('person_id, email, fullname, username, phone, profile_picture_url')
+    .eq('person_id', req.user.person_id)
+    .single();
+
+  if (error) throw error;
+
+  return successResponse(res, 'Profile fetched successfully', user);
+});
+
+/**
+ * @swagger
+ * /api/up/auth/resend-otp:
+ *   post:
+ *     summary: Resend email verification OTP
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email: { type: string }
+ *     responses:
+ *       200:
+ *         description: OTP resent
+ */
+export const resendOtp = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const { data: user } = await supabase
+    .from('person')
+    .select('person_id, email_verified')
+    .eq('email', email)
+    .single();
+
+  if (!user) return successResponse(res, 'If an account exists, a verification code has been sent');
+
+  if (user.email_verified) {
+    return errorResponse(res, StatusCodes.BAD_REQUEST, 'Email is already verified');
+  }
+
+  const otp = generateOTP();
+  await supabase
+    .from('person')
+    .update({
+      verification_otp: otp,
+      otp_expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString()
+    })
+    .eq('person_id', user.person_id);
+
+  await sendVerificationEmail(email, otp);
+
+  return successResponse(res, 'Verification code sent successfully');
+});
+
+/**
+ * @swagger
+ * /api/up/auth/change-password:
+ *   patch:
+ *     summary: Change password (authenticated)
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [currentPassword, newPassword]
+ *             properties:
+ *               currentPassword: { type: string }
+ *               newPassword: { type: string }
+ *     responses:
+ *       200:
+ *         description: Password changed
+ */
+export const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  const { data: user } = await supabase
+    .from('person')
+    .select('password')
+    .eq('person_id', req.user.person_id)
+    .single();
+
+  const isMatch = await comparePassword(currentPassword, user.password);
+  if (!isMatch) {
+    return errorResponse(res, StatusCodes.BAD_REQUEST, 'Current password is incorrect');
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+  await supabase
+    .from('person')
+    .update({ password: hashedPassword })
+    .eq('person_id', req.user.person_id);
+
+  return successResponse(res, 'Password changed successfully');
+});
+
+/**
+ * @swagger
+ * /api/up/auth/forgot-password-otp:
+ *   post:
+ *     summary: Request OTP-based password reset (mobile-friendly)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email: { type: string }
+ *     responses:
+ *       200:
+ *         description: OTP sent
+ */
+export const forgotPasswordOtp = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const { data: user } = await supabase
+    .from('person')
+    .select('person_id')
+    .eq('email', email)
+    .single();
+
+  if (!user) return successResponse(res, 'If an account exists, a reset code has been sent');
+
+  const otp = generateOTP();
+  await supabase
+    .from('person')
+    .update({
+      verification_otp: otp,
+      otp_expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString()
+    })
+    .eq('person_id', user.person_id);
+
+  await sendVerificationEmail(email, otp);
+
+  return successResponse(res, 'Password reset code sent to your email');
+});
+
+/**
+ * @swagger
+ * /api/up/auth/reset-password-otp:
+ *   post:
+ *     summary: Reset password using OTP (mobile-friendly)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, otp, newPassword]
+ *             properties:
+ *               email: { type: string }
+ *               otp: { type: string }
+ *               newPassword: { type: string }
+ *     responses:
+ *       200:
+ *         description: Password reset successful
+ */
+export const resetPasswordOtp = asyncHandler(async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  const { data: user } = await supabase
+    .from('person')
+    .select('person_id, verification_otp, otp_expires_at')
+    .eq('email', email)
+    .single();
+
+  if (!user) return errorResponse(res, StatusCodes.NOT_FOUND, 'User not found');
+
+  if (user.verification_otp !== otp) {
+    return errorResponse(res, StatusCodes.BAD_REQUEST, 'Invalid OTP');
+  }
+
+  if (new Date(user.otp_expires_at) < new Date()) {
+    return errorResponse(res, StatusCodes.BAD_REQUEST, 'OTP expired');
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+  await supabase
+    .from('person')
+    .update({
+      password: hashedPassword,
+      verification_otp: null,
+      otp_expires_at: null
+    })
+    .eq('person_id', user.person_id);
+
+  return successResponse(res, 'Password reset successful');
+});
