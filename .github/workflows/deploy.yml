@@ -21,3 +21,4 @@ jobs:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: grouppay-api-eu
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          don't_create: true
