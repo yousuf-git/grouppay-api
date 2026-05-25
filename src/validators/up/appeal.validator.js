@@ -7,6 +7,7 @@ export const createAppealSchema = Joi.object({
 });
 
 export const updateAppealSchema = Joi.object({
-  status: Joi.string().valid('OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'),
-  comment: Joi.string().allow('', null)
-});
+  status: Joi.string().valid('OPEN', 'UNDER_REVIEW', 'CLOSED'),
+  comment: Joi.string().allow('', null),
+  message: Joi.string().allow('', null)
+}).min(1);
