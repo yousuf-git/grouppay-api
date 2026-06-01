@@ -1,6 +1,6 @@
 <div align="center">
 
-  <h1><img src="groupPay-main.png" alt="GroupPay logo" width="45" /> GroupPay API</h1>
+  <h1><img src="wallet.png" alt="GroupPay logo" width="45" /> GroupPay API</h1>
 
   <p><strong>REST API for group expense management — scenes, deposits, balances, and notifications.</strong></p>
 
