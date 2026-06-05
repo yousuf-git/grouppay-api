@@ -9,6 +9,8 @@ const router = express.Router();
 router.use(protect);
 
 router.get('/stats', balanceController.getBalanceStats);
+router.get('/groups', balanceController.getGroupBalances);
+router.get('/groups/:groupId', balanceController.getGroupBalanceById);
 router.get('/', balanceController.getBalances);
 router.get('/:id', balanceController.getBalanceById);
 router.post('/', validate(balanceValidator.createBalanceSchema), balanceController.createBalance);

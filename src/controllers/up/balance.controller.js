@@ -235,6 +235,135 @@ export const updateBalance = asyncHandler(async (req, res) => {
  *       200:
  *         description: Balance entry deleted
  */
+/**
+ * @swagger
+ * /api/up/balances/groups:
+ *   get:
+ *     summary: Get balance summary for each group the user belongs to
+ *     tags: [Balances]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Array of group balances with credit, debit, netBalance per group
+ */
+export const getGroupBalances = asyncHandler(async (req, res) => {
+  const personId = req.user.person_id;
+
+  const { data: userGroups, error: groupError } = await supabase
+    .from('group_participants')
+    .select('group_id, groups(group_id, name)')
+    .eq('person_id', personId)
+    .eq('status', 'ACTIVE');
+
+  if (groupError) throw groupError;
+  if (!userGroups || userGroups.length === 0) {
+    return successResponse(res, 'No groups found', []);
+  }
+
+  const groupIds = userGroups.map(g => g.group_id);
+
+  const { data: transactions, error: txError } = await supabase
+    .from('transaction')
+    .select('group_id, type, amount')
+    .eq('person_id', personId)
+    .in('group_id', groupIds);
+
+  if (txError) throw txError;
+
+  const groupBalances = {};
+  userGroups.forEach(g => {
+    groupBalances[g.group_id] = {
+      group_id: g.group_id,
+      name: g.groups?.name || 'Unknown',
+      credit: 0,
+      debit: 0
+    };
+  });
+
+  (transactions || []).forEach(tx => {
+    if (groupBalances[tx.group_id]) {
+      if (tx.type === 'CREDIT') {
+        groupBalances[tx.group_id].credit += tx.amount;
+      } else {
+        groupBalances[tx.group_id].debit += tx.amount;
+      }
+    }
+  });
+
+  const result = Object.values(groupBalances).map(g => ({
+    ...g,
+    net_balance: g.credit - g.debit
+  }));
+
+  return successResponse(res, 'Group balances fetched', result);
+});
+
+/**
+ * @swagger
+ * /api/up/balances/groups/{groupId}:
+ *   get:
+ *     summary: Get balance for a specific group
+ *     tags: [Balances]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: groupId
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Group balance with credit, debit, netBalance
+ *       404:
+ *         description: Not a member of this group
+ */
+export const getGroupBalanceById = asyncHandler(async (req, res) => {
+  const personId = req.user.person_id;
+  const { groupId } = req.params;
+
+  const { data: membership, error: memberError } = await supabase
+    .from('group_participants')
+    .select('group_id, groups(group_id, name)')
+    .eq('person_id', personId)
+    .eq('group_id', groupId)
+    .eq('status', 'ACTIVE')
+    .single();
+
+  if (memberError || !membership) {
+    return errorResponse(res, StatusCodes.NOT_FOUND, 'Not a member of this group');
+  }
+
+  const [creditResult, debitResult] = await Promise.all([
+    supabase
+      .from('transaction')
+      .select('amount')
+      .eq('person_id', personId)
+      .eq('group_id', groupId)
+      .eq('type', 'CREDIT'),
+    supabase
+      .from('transaction')
+      .select('amount')
+      .eq('person_id', personId)
+      .eq('group_id', groupId)
+      .eq('type', 'DEBIT')
+  ]);
+
+  if (creditResult.error) throw creditResult.error;
+  if (debitResult.error) throw debitResult.error;
+
+  const credit = creditResult.data?.reduce((sum, t) => sum + t.amount, 0) || 0;
+  const debit = debitResult.data?.reduce((sum, t) => sum + t.amount, 0) || 0;
+
+  return successResponse(res, 'Group balance fetched', {
+    group_id: parseInt(groupId),
+    name: membership.groups?.name || 'Unknown',
+    credit,
+    debit,
+    net_balance: credit - debit
+  });
+});
+
 export const deleteBalance = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
