@@ -1,4 +1,4 @@
-name: Deploy to Heroku
+name: Deploy to EC2
 
 on:
   push:
@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
         with:
-          fetch-depth: 0
-
-      - name: Deploy to Heroku
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/grouppay-api-eu.git
-          git push heroku main --force
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/grouppay-api
+            git pull origin main
+            npm ci --omit=dev
+            sudo systemctl restart grouppay-api
